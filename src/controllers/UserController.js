@@ -15,19 +15,20 @@ const ListUsers = async (request, response) => {
 const UserById = async (request, response) => {
   try {
     const { id } = request.params;
-    const user = await UserModel.findByPk(id);
+    const user = await UserModel.findByPk(id, {
+      attributes: { exclude: ["password"] },
+    });
 
     if (user) {
-      response.status(200);
-      response.json(user);
+      response.status(200).json(user);
     } else {
-      response.status(404);
-      response.json({ message: "Usuário não encontrado" });
+      response.status(404).json({ message: "Usuário não encontrado" });
     }
   } catch (error) {
-    console.log(error.message);
-    response.status(500);
-    response.json({ message: "Erro ao buscar usuário " + error.message });
+    console.error(error.message);
+    response
+      .status(500)
+      .json({ message: "Erro ao buscar usuário: " + error.message });
   }
 };
 
@@ -50,16 +51,19 @@ const UpdateUser = async (request, response) => {
 
     if (updated) {
       const updatedUser = await UserModel.findByPk(id);
-      response.status(200);
-      response.json(updatedUser);
+      response.status(200).json({
+        message: "Usuário atualizado com sucesso",
+        updatedUser,
+        rowsUpdated: updated,
+      });
     } else {
-      response.status(404);
-      response.json({ message: "Usuário não encontrado" });
+      response.status(404).json({ message: "Usuário não encontrado" });
     }
   } catch (error) {
-    console.log(error.message);
-    response.status(500);
-    response.json({ message: "Erro ao atualizar usuário " + error.message });
+    console.error(error.message);
+    response
+      .status(500)
+      .json({ message: "Erro ao atualizar usuário: " + error.message });
   }
 };
 
